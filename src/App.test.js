@@ -1,33 +1,58 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import App from "./App";
+import App, { separateWithSpace } from "./App";
 
-test("initial conditions", function () {
-  render(<App />);
+describe("testing the button and checkbox", function () {
+  test("initial conditions", function () {
+    render(<App />);
 
-  const colorButton = screen.getByRole("button", { name: "Change to blue" });
-  const checkBox = screen.getByRole("checkbox", { name: "Disable checkbox" });
+    const colorButton = screen.getByRole("button", {
+      name: "Change to Midnight Blue",
+    });
+    const checkBox = screen.getByRole("checkbox", { name: "Disable checkbox" });
 
-  expect(checkBox).not.toBeChecked();
+    expect(checkBox).not.toBeChecked();
 
-  expect(colorButton).not.toBeDisabled();
-  expect(colorButton.textContent).toBe("Change to blue");
-  expect(colorButton).toHaveStyle({ backgroundColor: "red" });
+    expect(colorButton).not.toBeDisabled();
+    expect(colorButton.textContent).toBe("Change to Midnight Blue");
+    expect(colorButton).toHaveStyle({
+      backgroundColor: "MediumVioletRed",
+    });
+  });
+
+  test("click events work", function () {
+    render(<App />);
+    const colorButton = screen.getByRole("button", {
+      name: "Change to Midnight Blue",
+    });
+    const checkBox = screen.getByRole("checkbox", { name: "Disable checkbox" });
+
+    fireEvent.click(colorButton);
+    expect(colorButton).toHaveStyle({
+      backgroundColor: "MidnightBlue",
+    });
+    expect(colorButton.textContent).toBe("Change to Medium Violet Red");
+
+    fireEvent.click(checkBox);
+    expect(checkBox).toBeChecked();
+    expect(colorButton).toBeDisabled();
+    expect(colorButton).toHaveStyle({ backgroundColor: "gray" });
+
+    fireEvent.click(checkBox);
+    expect(checkBox).not.toBeChecked();
+    expect(colorButton).not.toBeDisabled();
+  });
 });
 
-test("click events work", function () {
-  render(<App />);
-  const colorButton = screen.getByRole("button", { name: "Change to blue" });
-  const checkBox = screen.getByRole("checkbox", { name: "Disable checkbox" });
+describe("unit testing 'separateWithSpace' function", function () {
+  test("Works for on inner capital letters", function () {
+    expect(separateWithSpace("Red")).toBe("Red");
+  });
 
-  fireEvent.click(colorButton);
-  expect(colorButton).toHaveStyle({ backgroundColor: "blue" });
-  expect(colorButton.textContent).toBe("Change to red");
+  test("Works for one inner capital letter", function () {
+    expect(separateWithSpace("MidnightBlue")).toBe("Midnight Blue");
+  });
 
-  fireEvent.click(checkBox);
-  expect(checkBox).toBeChecked();
-  expect(colorButton).toBeDisabled();
-
-  fireEvent.click(checkBox);
-  expect(checkBox).not.toBeChecked();
-  expect(colorButton).not.toBeDisabled();
+  test("Works for multiple inner capital letters", function () {
+    expect(separateWithSpace("MediumVioletRed")).toBe("Medium Violet Red");
+  });
 });
